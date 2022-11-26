@@ -1,6 +1,6 @@
 # Autenticación con OAuth 2.0
 
-1 - Clone del repo: https://github.com/glrodasz/platzi-autenticacion
+1 - Clone del repo: https://github.com/emersonxinay/autenticacion-oauth2
 En el repo estan los dos directorios admin y blog. Para cada directorio cambiar al branch de la clase:
 2 - git checkout configuracion-inicial-de-los-proyectos
 ```bash
