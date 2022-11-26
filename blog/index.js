@@ -1,30 +1,30 @@
-const express = require("express");
-const path = require("path");
-const request = require("request");
-const querystring = require("querystring");
-const cors = require("cors");
-const cookieParser = require("cookie-parser");
+const express = require('express');
+const path = require('path');
+const request = require('request');
+const querystring = require('querystring');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
-const generateRandomString = require("./utils/generateRandomString");
-const encodeBasic = require("./utils/encodeBasic");
-const scopesArray = require("./utils/scopesArray");
+const generateRandomString = require('./utils/generateRandomString');
+const encodeBasic = require('./utils/encodeBasic');
+const scopesArray = require('./utils/scopesArray');
 
-const playlistMocks = require("./utils/mocks/playlist");
+const playlistMocks = require('./utils/mocks/playlist');
 
-const { config } = require("./config");
+const { config } = require('./config');
 
 const app = express();
 
 // static files
-app.use("/static", express.static(path.join(__dirname, "public")));
+app.use('/static', express.static(path.join(__dirname, 'public')));
 
 // middlewares
 app.use(cors());
 app.use(cookieParser());
 
 // view engine setup
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "pug");
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
 
 function getUserInfo(accessToken) {
   if (!accessToken) {
@@ -32,13 +32,13 @@ function getUserInfo(accessToken) {
   }
 
   const options = {
-    url: "https://api.spotify.com/v1/me",
+    url: 'https://api.spotify.com/v1/me',
     headers: { Authorization: `Bearer ${accessToken}` },
-    json: true
+    json: true,
   };
 
   return new Promise((resolve, reject) => {
-    request.get(options, function(error, response, body) {
+    request.get(options, function (error, response, body) {
       if (error || response.statusCode !== 200) {
         reject(error);
       }
@@ -56,11 +56,11 @@ function getUserPlaylists(accessToken, userId) {
   const options = {
     url: `https://api.spotify.com/v1/users/${userId}/playlists`,
     headers: { Authorization: `Bearer ${accessToken}` },
-    json: true
+    json: true,
   };
 
   return new Promise((resolve, reject) => {
-    request.get(options, function(error, response, body) {
+    request.get(options, function (error, response, body) {
       if (error || response.statusCode !== 200) {
         reject(error);
       }
@@ -71,59 +71,60 @@ function getUserPlaylists(accessToken, userId) {
 }
 
 // routes
-app.get("/", async function(req, res, next) {
+app.get('/', async function (req, res, next) {
   const { access_token: accessToken } = req.cookies;
 
   try {
     const userInfo = await getUserInfo(accessToken);
-    res.render("playlists", {
+    res.render('playlists', {
       userInfo,
       isHome: true,
-      playlists: { items: playlistMocks }
+      playlists: { items: playlistMocks },
     });
   } catch (error) {
     next(error);
   }
 });
 
-app.get("/playlists", async function(req, res, next) {
+app.get('/playlists', async function (req, res, next) {
   const { access_token: accessToken } = req.cookies;
 
   if (!accessToken) {
-    return res.redirect("/");
+    return res.redirect('/');
   }
 
   try {
     const userInfo = await getUserInfo(accessToken);
     const userPlaylists = await getUserPlaylists(accessToken, userInfo.id);
 
-    res.render("playlists", { userInfo, playlists: userPlaylists });
+    res.render('playlists', { userInfo, playlists: userPlaylists });
   } catch (error) {
     next(error);
   }
 });
 
-app.get("/login", function(req, res) {
+app.get('/login', function (req, res) {
   const state = generateRandomString(16);
 
   const queryString = querystring.stringify({
-    response_type: "code",
+    response_type: 'code',
     client_id: config.spotifyClientId,
-    scope: scopesArray.join(" "),
+    scope: scopesArray.join(' '),
     redirect_uri: config.spotifyRedirectUri,
-    state: state
+    state: state,
   });
 
-  res.cookie("auth_state", state, { httpOnly: true });
+  res.cookie('auth_state', state, { httpOnly: true });
+  // url para autenticacion con spotify
   res.redirect(`https://accounts.spotify.com/authorize?${queryString}`);
 });
 
-app.get("/logout", function(req, res) {
-  res.clearCookie("access_token");
-  res.redirect("/");
+app.get('/logout', function (req, res) {
+  res.clearCookie('access_token');
+  res.redirect('/');
 });
 
-app.get("/callback", function(req, res, next) {
+app.get('/callback', function (req, res, next) {
   const { code, state } = req.query;
   const { auth_state } = req.cookies;
 
@@ -131,35 +132,35 @@ app.get("/callback", function(req, res, next) {
     next(new Error("The state doesn't match"));
   }
 
-  res.clearCookie("auth_state");
+  res.clearCookie('auth_state');
 
   const authOptions = {
-    url: "https://accounts.spotify.com/api/token",
+    url: 'https://accounts.spotify.com/api/token',
     form: {
       code: code,
       redirect_uri: config.spotifyRedirectUri,
-      grant_type: "authorization_code"
+      grant_type: 'authorization_code',
     },
     headers: {
       Authorization: `Basic ${encodeBasic(
         config.spotifyClientId,
         config.spotifyClientSecret
-      )}`
+      )}`,
     },
-    json: true
+    json: true,
   };
 
-  request.post(authOptions, function(error, response, body) {
+  request.post(authOptions, function (error, response, body) {
     if (error || response.statusCode !== 200) {
-      next(new Error("The token is invalid"));
+      next(new Error('The token is invalid'));
     }
 
-    res.cookie("access_token", body.access_token, { httpOnly: true });
-    res.redirect("/playlists");
+    res.cookie('access_token', body.access_token, { httpOnly: true });
+    res.redirect('/playlists');
   });
 });
 
 // server
-const server = app.listen(3000, function() {
+const server = app.listen(3000, function () {
   console.log(`Listening http://localhost:${server.address().port}`);
 });
