@@ -1,17 +1,17 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
-import AppNavbar from "./AppNavbar";
-import AppFooter from "./AppFooter";
+import AppNavbar from './AppNavbar';
+import AppFooter from './AppFooter';
 
-import AuthService from "../services/AuthService";
-import isEmptyObject from "../utils/isEmptyObject";
+import AuthService from '../services/AuthService';
+import isEmptyObject from '../utils/isEmptyObject';
 
 import {
   generalStyles,
   visibilityStyles,
-  semanticStyles
-} from "../utils/globalStyles";
+  semanticStyles,
+} from '../utils/globalStyles';
 
 class Layout extends Component {
   constructor(props) {
@@ -27,10 +27,10 @@ class Layout extends Component {
       this.setState({
         isAuthenticated: true,
         loggedUser: {
-          name: profile.display_name || profile.name,
+          name: profile.display_name,
           email: profile.email,
-          picture: profile.picture || profile && profile.images && profile.images[0].url
-        }
+          picture: profile && profile.images && profile.images[0].url,
+        },
       });
     } else {
       this.setState({ isAuthenticated: false });
@@ -43,7 +43,7 @@ class Layout extends Component {
 
   handleLogout = () => {
     this.authService.logout();
-    window.location.href = "/";
+    window.location.href = '/';
   };
 
   render() {
@@ -51,14 +51,14 @@ class Layout extends Component {
     const { isAuthenticated, loggedUser } = this.state;
 
     return (
-      <div className="layout">
+      <div className='layout'>
         <AppNavbar
           handleLogin={this.handleLogin}
           handleLogout={this.handleLogout}
           isAuthenticated={isAuthenticated}
           loggedUser={loggedUser}
         />
-        <main className="layout-content">{children}</main>
+        <main className='layout-content'>{children}</main>
         <AppFooter />
         <style jsx global>
           {generalStyles}
@@ -75,7 +75,7 @@ class Layout extends Component {
 }
 
 Layout.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
 };
 
 export default Layout;

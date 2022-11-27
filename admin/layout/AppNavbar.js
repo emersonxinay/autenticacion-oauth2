@@ -1,51 +1,51 @@
-import React from "react";
-import PropTypes from "prop-types";
-import Link from "next/link";
-import { Menu, Icon, Dropdown, Button } from "semantic-ui-react";
+import React from 'react';
+import PropTypes from 'prop-types';
+import Link from 'next/link';
+import { Menu, Icon, Dropdown, Button } from 'semantic-ui-react';
 
-import Logo from "../components/Logo";
-import Avatar from "../components/Avatar";
+import Logo from '../components/Logo';
+import Avatar from '../components/Avatar';
 
-import { PACIFIC_BLUE } from "../utils/colors";
+import { PACIFIC_BLUE } from '../utils/colors';
 
 const navbarMenuStyles = {
   backgroundColor: PACIFIC_BLUE,
-  border: "0",
+  border: '0',
   boxShadow:
-    "0 3px 4px 0 rgba(0,0,0,0.12), 0 3px 3px -2px rgba(0,0,0,0.1), 0 1px 8px 0 rgba(0,0,0,0.14)"
+    '0 3px 4px 0 rgba(0,0,0,0.12), 0 3px 3px -2px rgba(0,0,0,0.1), 0 1px 8px 0 rgba(0,0,0,0.14)',
 };
 
 const menuItemStyles = {
-  padding: "0 15px"
+  padding: '0 15px',
 };
 
 const dropdownStyles = {
-  color: "white"
+  color: 'white',
 };
 
 const dropdownMenuStyles = {
-  width: "150px"
+  width: '150px',
 };
 
 const Navbar = ({
   handleLogin,
   handleLogout,
   isAuthenticated,
-  loggedUser: { name, email, picture }
+  loggedUser: { name, email, picture },
 }) => {
   const showEmail = name && email;
 
   return (
-    <nav className="navbar">
-      <Menu fixed="top" style={navbarMenuStyles}>
+    <nav className='navbar'>
+      <Menu fixed='top' style={navbarMenuStyles}>
         <Logo />
-        <Menu.Menu position="right">
+        <Menu.Menu position='right'>
           <Menu.Item style={menuItemStyles}>
             {isAuthenticated ? (
               <Dropdown
                 style={dropdownStyles}
                 trigger={<Avatar picture={picture} />}
-                pointing="top right"
+                pointing='top right'
               >
                 <Dropdown.Menu style={dropdownMenuStyles}>
                   <Dropdown.Item disabled>
@@ -61,14 +61,14 @@ const Navbar = ({
 
                   <Dropdown.Item onClick={handleLogout}>
                     <span>
-                      <Icon name="log out" />
+                      <Icon name='log out' />
                       <span>Salir</span>
                     </span>
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             ) : (
-              <Button onClick={handleLogin} color="olive">
+              <Button onClick={handleLogin} color='olive'>
                 Log in
               </Button>
             )}
@@ -80,7 +80,7 @@ const Navbar = ({
 };
 
 Navbar.propTypes = {
-  loggedUser: PropTypes.object.isRequired
+  loggedUser: PropTypes.object.isRequired,
 };
 
 export default Navbar;
